@@ -6,8 +6,7 @@ services:
     hostname: api1
     environment:
       - PORT=8081
-#      - VIRTUAL_THREADS=true
-#      - CONNECTION_POOL=10
+      - VIRTUAL_THREADS=false
 #    depends_on:
 #      postgres:
 #        condition: service_healthy
@@ -38,41 +37,24 @@ services:
           cpus: "0.2"
           memory: "50MB"
 
-#  postgres:
-#    image: postgres:16.1
-#    hostname: database
-#    volumes:
-#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-#    environment:
-#      - POSTGRES_USER=rinhabackend
-#      - POSTGRES_PASSWORD=rinhabackend
-#      - POSTGRES_DB=rinhabackend
-#    network_mode: host
-##    healthcheck:
-##      test: [ "CMD-SHELL", "pg_isready", "-U", "rinhabackend", "-d", "rinhabackend" ]
-##      interval: 5s
-##      timeout: 5s
-##      retries: 5
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: '0.5'
-#          memory: '500MB'
-
-  mysql:
-    image: mysql
+  postgres:
+    image: postgres:16.1
     hostname: database
     volumes:
-      - ./init-mysql.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_USER=rinhabackend
-      - MYSQL_PASSWORD=rinhabackend
-      - MYSQL_DATABASE=rinhabackend
-#    ports:
-#      - 3306:3306
+      - POSTGRES_USER=rinhabackend
+      - POSTGRES_PASSWORD=rinhabackend
+      - POSTGRES_DB=rinhabackend
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready", "-U", "rinhabackend", "-d", "rinhabackend" ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 5
+    ports:
+      - 5432:5432
     deploy:
       resources:
         limits:
-          cpus: '1'
-          memory: '1GB'
+          cpus: '0.5'
+          memory: '500MB'

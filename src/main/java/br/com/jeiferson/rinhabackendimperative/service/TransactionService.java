@@ -8,9 +8,12 @@ import br.com.jeiferson.rinhabackendimperative.model.entity.Transaction;
 import br.com.jeiferson.rinhabackendimperative.model.response.TransactionResponse;
 import br.com.jeiferson.rinhabackendimperative.repository.CustomerRepository;
 import br.com.jeiferson.rinhabackendimperative.repository.TransactionRepository;
+import br.com.jeiferson.rinhabackendimperative.util.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -23,8 +26,9 @@ public class TransactionService {
   @Autowired
   private TransactionRepository transactionRepository;
 
-  public TransactionResponse create(Integer customerId, CreateTransactionDTO createTransactionDTO) {
-    Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
+  public TransactionResponse create(Integer customerId, CreateTransactionDTO createTransactionDTO) throws SQLException {
+    Connection conn = DataSource.getConnection();
+    Optional<Customer> optionalCustomer = customerRepository.findById(conn, customerId);
     if (optionalCustomer.isEmpty()) {
       throw new NotFoundException("CustomerNotFoundException");
     }
@@ -40,9 +44,11 @@ public class TransactionService {
       customer.setBalance(customer.getBalance() - createTransactionDTO.valor().intValue());
     }
 
-    customerRepository.update(customer);
+    customerRepository.update(conn, customer);
 
-    createTransaction(createTransactionDTO, customerId);
+    createTransaction(conn, createTransactionDTO, customerId);
+    conn.commit();
+    conn.close();
 
     return buildResponse(customer);
   }
@@ -51,14 +57,14 @@ public class TransactionService {
     return new TransactionResponse(customer.getAccountLimit(), customer.getBalance());
   }
 
-  private void createTransaction(CreateTransactionDTO createTransactionDTO, Integer customerID) {
+  private void createTransaction(Connection conn, CreateTransactionDTO createTransactionDTO, Integer customerID) {
     Transaction transaction = new Transaction();
     transaction.setValue(createTransactionDTO.valor().intValue());
     transaction.setType(createTransactionDTO.tipo());
     transaction.setDescription(createTransactionDTO.descricao());
     transaction.setDate(LocalDateTime.now().toString());
     transaction.setCustomerId(customerID);
-    transactionRepository.save(transaction);
+    transactionRepository.save(conn, transaction);
   }
 
   private boolean isValidTransaction(CreateTransactionDTO createTransactionDTO, Customer customer) {

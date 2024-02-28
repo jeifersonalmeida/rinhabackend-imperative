@@ -13,11 +13,10 @@ import java.util.Optional;
 @Repository
 public class CustomerRepository {
 
-  public Optional<Customer> findById(Integer customerId) {
+  public Optional<Customer> findById(Connection conn, Integer customerId) {
     String query = "SELECT * FROM customer WHERE id = ?";
 
-    try (Connection conn = DataSource.getConnection();
-         PreparedStatement ps = conn.prepareStatement(query)) {
+    try (PreparedStatement ps = conn.prepareStatement(query)) {
       ps.setInt(1, customerId);
       ResultSet rs = ps.executeQuery();
 
@@ -29,18 +28,17 @@ public class CustomerRepository {
         customer.setAccountLimit(rs.getInt("account_limit"));
       }
       rs.close();
-      conn.close();
+//      conn.close();
       return customer != null ? Optional.of(customer) : Optional.empty();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public void update(Customer customer) {
+  public void update(Connection conn, Customer customer) {
     String query = "UPDATE customer SET balance = ?, account_limit = ? WHERE id = ?";
 
-    try (Connection conn = DataSource.getConnection();
-         PreparedStatement ps = conn.prepareStatement(query)) {
+    try (PreparedStatement ps = conn.prepareStatement(query)) {
       ps.setInt(1, customer.getBalance());
       ps.setInt(2, customer.getAccountLimit());
       ps.setInt(3, customer.getId());

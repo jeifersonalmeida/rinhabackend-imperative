@@ -15,12 +15,11 @@ import java.util.List;
 @Repository
 public class TransactionRepository {
 
-  public List<Transaction> findLastestTransactions(Integer customerId) {
+  public List<Transaction> findLastestTransactions(Connection conn, Integer customerId) {
     String query = "SELECT * FROM transaction WHERE customer_id = ? ORDER BY date DESC LIMIT 10";
 
     List<Transaction> transactionList = new ArrayList<>();
-    try (Connection conn = DataSource.getConnection();
-         PreparedStatement ps = conn.prepareStatement(query)) {
+    try (PreparedStatement ps = conn.prepareStatement(query)) {
       ps.setInt(1, customerId);
       ResultSet rs = ps.executeQuery();
       Transaction transaction;
@@ -41,11 +40,10 @@ public class TransactionRepository {
     return transactionList;
   }
 
-  public void save(Transaction transaction) {
+  public void save(Connection conn, Transaction transaction) {
     String query = "INSERT INTO transaction (value, type, description, date, customer_id) VALUES (?, ?, ?, ?, ?)";
 
-    try (Connection conn = DataSource.getConnection();
-         PreparedStatement ps = conn.prepareStatement(query)) {
+    try (PreparedStatement ps = conn.prepareStatement(query)) {
       ps.setInt(1, transaction.getValue());
       ps.setString(2, transaction.getType().toString());
       ps.setString(3, transaction.getDescription());
