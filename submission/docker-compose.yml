@@ -9,9 +9,9 @@ services:
       - DB_USERNAME=rinhabackend
       - DB_PASSWORD=rinhabackend
       - PORT=8081
-      - VIRTUAL_THREADS=true
-      - POOL_SIZE=15
-      - TOMCAT_THREAD_POOL=600
+      - VIRTUAL_THREADS=false
+      - POOL_SIZE=10
+      - TOMCAT_THREAD_POOL=150
 #    depends_on:
 #      postgres:
 #        condition: service_healthy
@@ -29,9 +29,9 @@ services:
       - DB_USERNAME=rinhabackend
       - DB_PASSWORD=rinhabackend
       - PORT=8082
-      - VIRTUAL_THREADS=true
-      - POOL_SIZE=15
-      - TOMCAT_THREAD_POOL=600
+      - VIRTUAL_THREADS=false
+      - POOL_SIZE=10
+      - TOMCAT_THREAD_POOL=150
 
   nginx:
     image: nginx
