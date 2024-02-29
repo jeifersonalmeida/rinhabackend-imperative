@@ -9,7 +9,7 @@ services:
       - DB_USERNAME=rinhabackend
       - DB_PASSWORD=rinhabackend
       - PORT=8081
-      - VIRTUAL_THREADS=false
+      - VIRTUAL_THREADS=true
       - POOL_SIZE=10
 #    depends_on:
 #      postgres:
@@ -28,7 +28,7 @@ services:
       - DB_USERNAME=rinhabackend
       - DB_PASSWORD=rinhabackend
       - PORT=8082
-      - VIRTUAL_THREADS=false
+      - VIRTUAL_THREADS=true
       - POOL_SIZE=10
 
   nginx:
