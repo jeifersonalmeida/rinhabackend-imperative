@@ -1,6 +1,6 @@
 services:
   api1: &api
-    image: rinhabackend-imperative:0.0.1-SNAPSHOT
+    image: jeiferson/rinhabackend-imperative:latest
 #    image: rinha-backend-imperative
 #    build: ../
     hostname: api1
