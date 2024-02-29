@@ -10,7 +10,7 @@ services:
       - DB_PASSWORD=rinhabackend
       - PORT=8081
       - VIRTUAL_THREADS=false
-      - POOL_SIZE=20
+      - POOL_SIZE=25
       - TOMCAT_THREAD_POOL=150
 #    depends_on:
 #      postgres:
@@ -30,7 +30,7 @@ services:
       - DB_PASSWORD=rinhabackend
       - PORT=8082
       - VIRTUAL_THREADS=false
-      - POOL_SIZE=20
+      - POOL_SIZE=25
       - TOMCAT_THREAD_POOL=150
 
   nginx:
