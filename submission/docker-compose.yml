@@ -11,7 +11,7 @@ services:
       - PORT=8081
       - VIRTUAL_THREADS=false
       - POOL_SIZE=10
-      - TOMCAT_THREAD_POOL=150
+      - TOMCAT_THREAD_POOL=200
 #    depends_on:
 #      postgres:
 #        condition: service_healthy
@@ -31,7 +31,7 @@ services:
       - PORT=8082
       - VIRTUAL_THREADS=false
       - POOL_SIZE=10
-      - TOMCAT_THREAD_POOL=150
+      - TOMCAT_THREAD_POOL=200
 
   nginx:
     image: nginx
