@@ -1,26 +1,35 @@
 services:
   api1: &api
-#    image: rinhabackend-imperative:0.0.1-SNAPSHOT
+    image: rinhabackend-imperative:0.0.1-SNAPSHOT
 #    image: rinha-backend-imperative
-    build: ../
+#    build: ../
     hostname: api1
     environment:
+      - JDBC_URL=jdbc:postgresql://database:5432/rinhabackend
+      - DB_USERNAME=rinhabackend
+      - DB_PASSWORD=rinhabackend
       - PORT=8081
       - VIRTUAL_THREADS=false
+      - POOL_SIZE=10
 #    depends_on:
 #      postgres:
 #        condition: service_healthy
     deploy:
       resources:
         limits:
-          cpus: "1.5"
-          memory: "1GB"
+          cpus: "0.4"
+          memory: "150MB"
 
   api2:
     <<: *api
     hostname: api2
     environment:
+      - JDBC_URL=jdbc:postgresql://database:5432/rinhabackend
+      - DB_USERNAME=rinhabackend
+      - DB_PASSWORD=rinhabackend
       - PORT=8082
+      - VIRTUAL_THREADS=false
+      - POOL_SIZE=10
 
   nginx:
     image: nginx
@@ -51,10 +60,10 @@ services:
 #      interval: 5s
 #      timeout: 5s
 #      retries: 5
-    ports:
-      - 5432:5432
+#    ports:
+#      - 5432:5432
     deploy:
       resources:
         limits:
           cpus: '0.5'
-          memory: '500MB'
+          memory: '200MB'

@@ -27,30 +27,32 @@ public class TransactionService {
   private TransactionRepository transactionRepository;
 
   public TransactionResponse create(Integer customerId, CreateTransactionDTO createTransactionDTO) throws SQLException {
-    Connection conn = DataSource.getConnection();
-    Optional<Customer> optionalCustomer = customerRepository.findById(conn, customerId);
-    if (optionalCustomer.isEmpty()) {
-      throw new NotFoundException("CustomerNotFoundException");
+    try (Connection conn = DataSource.getConnection()) {
+      conn.setAutoCommit(false);
+
+      Optional<Customer> optionalCustomer = customerRepository.findByIdForUpdate(conn, customerId);
+      if (optionalCustomer.isEmpty()) {
+        throw new NotFoundException("CustomerNotFoundException");
+      }
+
+      Customer customer = optionalCustomer.get();
+      if (!isValidTransaction(createTransactionDTO, customer)) {
+        throw new UnprocessableEntityException("BalanceLessThanLimitException");
+      }
+
+      if (createTransactionDTO.tipo() == 'c') {
+        customer.setBalance(customer.getBalance() + createTransactionDTO.valor().intValue());
+      } else {
+        customer.setBalance(customer.getBalance() - createTransactionDTO.valor().intValue());
+      }
+
+      customerRepository.update(conn, customer);
+
+      createTransaction(conn, createTransactionDTO, customerId);
+      conn.commit();
+
+      return buildResponse(customer);
     }
-
-    Customer customer = optionalCustomer.get();
-    if (!isValidTransaction(createTransactionDTO, customer)) {
-      throw new UnprocessableEntityException("BalanceLessThanLimitException");
-    }
-
-    if (createTransactionDTO.tipo() == 'c') {
-      customer.setBalance(customer.getBalance() + createTransactionDTO.valor().intValue());
-    } else {
-      customer.setBalance(customer.getBalance() - createTransactionDTO.valor().intValue());
-    }
-
-    customerRepository.update(conn, customer);
-
-    createTransaction(conn, createTransactionDTO, customerId);
-    conn.commit();
-    conn.close();
-
-    return buildResponse(customer);
   }
 
   private TransactionResponse buildResponse(Customer customer) {

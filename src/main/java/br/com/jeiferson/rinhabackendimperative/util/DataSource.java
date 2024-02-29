@@ -12,10 +12,10 @@ public class DataSource {
   private static final HikariDataSource ds;
 
   static {
-    config.setJdbcUrl("jdbc:postgresql://database:5432/rinhabackend");
-    config.setUsername("rinhabackend");
-    config.setPassword("rinhabackend");
-    config.setAutoCommit(false);
+    config.setJdbcUrl(System.getenv("JDBC_URL"));
+    config.setUsername(System.getenv("DB_USERNAME"));
+    config.setPassword(System.getenv("DB_PASSWORD"));
+    config.setMaximumPoolSize(Integer.parseInt(System.getenv("POOL_SIZE")));
     ds = new HikariDataSource(config);
   }
 

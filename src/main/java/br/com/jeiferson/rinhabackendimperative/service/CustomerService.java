@@ -28,16 +28,16 @@ public class CustomerService {
   private TransactionRepository transactionRepository;
 
   public StatementResponse getStatement(Integer customerId) throws SQLException {
-    Connection conn = DataSource.getConnection();
-    Optional<Customer> optionalCustomer = customerRepository.findById(conn, customerId);
-    if (optionalCustomer.isEmpty()) {
-      throw new NotFoundException("CustomerNotFoundException");
-    }
+    try (Connection conn = DataSource.getConnection()) {
+      Optional<Customer> optionalCustomer = customerRepository.findById(conn, customerId);
+      if (optionalCustomer.isEmpty()) {
+        throw new NotFoundException("CustomerNotFoundException");
+      }
 
-    List<Transaction> transactionList = transactionRepository.findLastestTransactions(conn, customerId);
-    conn.commit();
-    conn.close();
-    return buildResponse(optionalCustomer.get(), transactionList);
+      List<Transaction> transactionList = transactionRepository.findLastestTransactions(conn, customerId);
+
+      return buildResponse(optionalCustomer.get(), transactionList);
+    }
   }
 
   private StatementResponse buildResponse(Customer customer, List<Transaction> transactionList) {
